@@ -21,13 +21,20 @@ void setup() {
   pinMode(button, INPUT);        // declara o button com uma entrada
   pinMode(Luz_Fundo, OUTPUT);
   
-  servoTampa.attach(2);         // Define o pino 2 para o servo
+  servoTampa.attach(9);         // Define o pino 9 para o servo
   servoTampa.write(0);           // Vai pro angulo ZERO (posicao inicial)
   
   digitalWrite(Luz_Fundo, HIGH); 
  
   lcd.begin(16,2);
   lcd.createChar(1, heart); 
+  
+  /* 
+    Inicio do Game: Mensagem de saudaçao  
+  */  
+  loadingHearts(0);               // faz o coracao piscar por 0.5 segundo (5 vezes)                                            
+  mensagemLCD("Ola' mestre!", "", 2000);        
+  stageGame++; //adiciona 1 para entrar na proxima fase 
   
   delay(200);
 }
@@ -36,17 +43,16 @@ void setup() {
 
 void loop() {
   
-  int estado = digitalRead(button);
+  int estado = digitalRead(button);   
   
-  Serial.println(estado, DEC);
+  if (canInterrupt()) {
+    if (estado == LOW) { Serial.println("ON"); } else { Serial.println("OFF"); }
+  }
   
+  
+  servoTampa.write(90);
+  /*
   switch (stageGame) {
-    
-    case 0:
-      loadingHearts(0);               // faz o coracao piscar por 0.5 segundo (5 vezes)                                            
-      mensagemLCD("Ola' mestre!", "", 2000);        
-      stageGame++; //adiciona 1 para entrar na proxima fase      
-      break;
         
     case 1: 
       mensagemLCD("Voce e humano?", "", 4000);  
@@ -57,27 +63,18 @@ void loop() {
       mensagemLCD("O ceu esta", "azul?", 4000);        
       actionAndCheckQuestion();  
       break;
-  
-    case 3:
-      mensagemLCD("As plantas", "estao verdes?", 4000);      
-      actionAndCheckQuestion(); 
-      break; 
-  
-    case 4:
-      mensagemLCD("Esta pisando", "no chão?", 4000);      
-      actionAndCheckQuestion();    
-      break;
     
-    case 5:
+    case 3:
       mensagemLCD("Quer conhecer", "o premio?", 4000);
       actionAndCheckQuestion();
-      break;  
-      
-    case 6:
+      break;       
+  }
+  
+  if (stageGame == 999) {
       mensagemLCD("BINGO!!!", "", 4000);
       servoTampa.write(60);                       // Servo vai para a posicao 60º
-      break;   
   }
+  */
   
 }
 
@@ -113,7 +110,7 @@ void checkNextStage() {
     
     Serial.println(btnStatus, DEC);  // mensagem para o monitor com o estado do botao
     
-    if (btnStatus == 1) {
+    if (btnStatus == LOW) {
       Serial.println("Proxima fase!");
       stageGame++;
       lcd.clear();                   // limpa a tela do LCD
@@ -125,7 +122,7 @@ void checkNextStage() {
 void loadingHearts(int mode) {
 
     switch (mode) {
-        case 1:
+        case 0:
           for(int i = 0; i < 15; i++) {
             lcd.setCursor(15,0);
             lcd.write(1);
@@ -135,7 +132,7 @@ void loadingHearts(int mode) {
             delay(80);
           }   
           break;
-        case :
+        case 1:
           for(int i = 0; i < 15; i++) {
               lcd.setCursor(i,0);
               lcd.write(1);
@@ -147,6 +144,30 @@ void loadingHearts(int mode) {
           break;
         default:
           // do nothing
+          break;
     }
 
 }
+
+/*
+ *  Funcão que checa se o botão já foi acionado para evitar
+ *  o bounce.
+ *
+ *  Por Bruno P. Gonçalves 
+ *  http://forum.arduino.cc/index.php?PHPSESSID=e8cf5dpt7nkp4jil41cp7edp64&topic=29133.0
+*/
+
+bool canInterrupt()
+{
+      static unsigned long last_interrupt_time = 0;
+      unsigned long interrupt_time = millis();
+
+      // Verifica se a ultima interrupção foi à 200 ms
+      if(interrupt_time - last_interrupt_time > 400)
+      {
+            last_interrupt_time = interrupt_time;
+            return true;
+      }
+      return false;
+} 
+
