@@ -3,7 +3,7 @@
 
 /* Inicializa as CONSTANTES */
 const int Luz_Fundo = 7;
-const int button = 10; //13;        // variavel para o BTN
+const int button = 13;              // variavel para o BTN
 Servo servoTampa;                   // cria o servo object
 LiquidCrystal lcd(12,11,5,4,3,2);   // cria o LiquidCrystal object
 
@@ -21,8 +21,8 @@ void setup() {
   pinMode(button, INPUT);        // declara o button com uma entrada
   pinMode(Luz_Fundo, OUTPUT);
   
-  servoTampa.attach(9);         // Define o pino 9 para o servo
-  servoTampa.write(0);           // Vai pro angulo ZERO (posicao inicial)
+  servoTampa.attach(9);           // Define o pino 9 para o servo
+  servoTampa.write(0);            // Vai pro angulo ZERO (posicao inicial)
   
   digitalWrite(Luz_Fundo, HIGH); 
  
@@ -45,13 +45,10 @@ void loop() {
   
   int estado = digitalRead(button);   
   
-  if (canInterrupt()) {
-    if (estado == LOW) { Serial.println("ON"); } else { Serial.println("OFF"); }
-  }
+  // if (canInterrupt()) {
+  //   if (estado == LOW) { Serial.println("ON"); } else { Serial.println("OFF"); }
+  // }    
   
-  
-  servoTampa.write(90);
-  /*
   switch (stageGame) {
         
     case 1: 
@@ -72,9 +69,9 @@ void loop() {
   
   if (stageGame == 999) {
       mensagemLCD("BINGO!!!", "", 4000);
-      servoTampa.write(60);                       // Servo vai para a posicao 60º
+      servoTampa.write(90);                       // Servo vai para a posicao 90º
   }
-  */
+  
   
 }
 
